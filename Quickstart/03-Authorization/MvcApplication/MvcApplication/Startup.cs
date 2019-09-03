@@ -63,6 +63,12 @@ namespace MvcApplication
                 {
                     RedirectToIdentityProvider = notification =>
                     {
+			 //Changes done for adding state
+			  var stateQueryString = notification.ProtocolMessage.State.Split('=');
+			  var protectedState = stateQueryString[1];
+			  var state = notification.Options.StateDataFormat.Unprotect(protectedState);
+			  state.Dictionary.Add("username", "abcd123");
+			  notification.ProtocolMessage.State = stateQueryString[0] + "=" + notification.Options.StateDataFormat.Protect(state);
                         if (notification.ProtocolMessage.RequestType == OpenIdConnectRequestType.Logout)
                         {
                             var logoutUri = $"https://{auth0Domain}/v2/logout?client_id={auth0ClientId}";
